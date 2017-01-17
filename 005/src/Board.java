@@ -8,15 +8,13 @@ public class Board {
 
 
 	private String tableName;
-	private DB db;
+	private BoardDataBase db;
 	
 	
 	public Board(String tableName)
 	{
 		this.tableName = tableName;
-		this.db = new DB();
-		this.db.createTable(this.tableName);
-		
+		this.db = new BoardDataBase();
 		
 	}
 	
@@ -26,7 +24,7 @@ public class Board {
 	{
 		//1. 목록 요청(LT|)
 		//2. 목록 데이터 생성
-		List<Map<String, String>> boardList = this.db.get(tableName);
+		List<Map<String, String>> boardList = this.db.selectList();
 		//3. 목록 출력
 		if (boardList != null) {
 			IOUtil.print(LIST_HEADER);
@@ -53,14 +51,8 @@ public class Board {
 			
 		}
 		//5.3. 처리
-		List<Map<String, String>> boardList = this.db.get(tableName,"SEQ",seq);
-		Map<String,String> board = null;
-		
-		if(boardList.size() == 1){
-			board=boardList.get(0);
-		}
-		
-	
+		Map<String,String> board = this.db.select(Integer.parseInt(seq));
+
 		//조회수 증가
 		Integer readCount=Integer.parseInt(board.get("READ_COUNT"))+1;
 		
@@ -86,7 +78,7 @@ public class Board {
 			
 		}
 		//3. 삭제 처리
-		this.db.remove(tableName, "SEQ",seq);
+		this.db.delete(Integer.parseInt(seq));
 		//9. 삭제 결과 출력
 		System.out.println("삭제 되었습니다");
 	}
@@ -100,8 +92,7 @@ public class Board {
 			
 		}
 		//3. 처리
-		List<Map<String, String>> boardList = this.db.get(tableName,"SEQ",seq);
-		Map<String, String> board = null;
+		Map<String, String> board = this.db.select(Integer.parseInt(seq));
 
 		//조회수 증가
 		Integer readCount=Integer.parseInt(board.get("READ_COUNT"))+1;
@@ -139,17 +130,10 @@ public class Board {
 		if(title != null && content !=null && !title.equals("") && !content.equals("")){
 				
 		}
-		Map<String, String> board = new HashMap<String, String>();
-		Integer seq=this.db.get(tableName).size();
-		
-		board.put("SEQ",seq.toString());
-		board.put("TITLE", title);
-		board.put("CONTENT", content);
-		String cal= IOUtil.date();
-		board.put("REGIST_DATE", cal);
-		board.put("READ_COUNT","0");
+
 		//3. 처리
-		this.db.add(tableName,board);
+		int seq = this.db.insert(title, content);
+		Map<String, String> board = this.db.select(seq);
 //		//22. 등록 처리 결과 출력
 		if (board != null) {
 			System.out.println("번호: " + board.get("SEQ"));
@@ -173,18 +157,8 @@ public class Board {
 			
 		}
 		//3. 처리
-		Map<String, String> board = new HashMap<String, String>();
-		board.put("SEQ", seq);
-		board.put("TITLE",title);
-		board.put("CONTENT",content);
-		String cal= IOUtil.date();
-		board.put("REGIST_DATE", cal);
-		//조회수 증가
-		Integer readCount=Integer.parseInt(board.get("READ_COUNT"))+1;
-		
-		board.put("READ_COUNT",readCount.toString());
-		this.db.set(tableName,board,"SEQ",seq);
-		
+		this.db.update(Integer.parseInt(seq),title,content);
+		Map<String, String> board = this.db.select(Integer.parseInt(seq));
 		//16. 수정 처리 결과 출력
 		if (board != null) {
 			System.out.println("번호: " + board.get("SEQ"));
