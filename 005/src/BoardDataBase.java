@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class BoardDataBase {
 	//경로
-	private final static String path="/Users/hongsung-won/IdeaProjects/study/out/production/005";
+	private final static String path="";
 	//seq파일
 	private final static String seqFile="seq";
 	//db파일
@@ -37,45 +37,61 @@ public class BoardDataBase {
 		File seqDataFile = new File(path,seqFile);
 		//2. 파일 존재 여부 판단
 		if(!seqDataFile.exists()){
+			FileOutputStream fos = null;
 			try {
 				//3. 없다면 파일생성
 				seqDataFile.createNewFile();
 				returnSeq= returnSeq+1;
 				//4.기록
-				FileOutputStream fos = new FileOutputStream(seqDataFile);
+				fos = new FileOutputStream(seqDataFile);
 				fos.write(returnSeq);
 				fos.flush();
-				//5. 닫기
-				fos.close();
+
 				return returnSeq;
 			} catch (IOException e) {
 				e.printStackTrace();
+			}finally {
+				//5. 닫기
+				try {
+					if(fos!= null)fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
 		try {
+
 			//3. 있다면 파일읽기
-			FileInputStream fis= new FileInputStream(seqDataFile);
+			fis = new FileInputStream(seqDataFile);
 			returnSeq=fis.read();
-			fis.close();
+
 			//4. 번호 증가후 기록
 			returnSeq= returnSeq+1;
-			FileOutputStream fos = new FileOutputStream(seqDataFile);
+			fos = new FileOutputStream(seqDataFile);
 			fos.write(returnSeq);
 			fos.flush();
-			//5. 닫기
-			fos.close();
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			//5. 닫기
+			try {
+				if(fos != null)fos.close();
+				if(fis != null)fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 		return returnSeq;
 	}
 		
 	//등록 (insert)
 	public int insert(String title, String content){
-		
 		// 1. 문서 번호 가져오기
 		int systemSeq = getSystemSeq();
 		// 2. 등록일 가져오기
@@ -96,7 +112,7 @@ public class BoardDataBase {
 				e.printStackTrace();
 			}
 		}
-		FileWriter fw=null;
+		FileWriter fw = null;
 		try {
 			//5. 존재하면 이어쓰기
 			fw = new FileWriter(dataFile,true);
@@ -107,10 +123,16 @@ public class BoardDataBase {
 			fw.write("READ_COUNT|"+String.valueOf(configHit));
 			fw.write("\n");
 			fw.flush();
-			//6. 닫기
-			fw.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			//6. 닫기
+			try {
+				if(fw != null)fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 				
 		
@@ -123,10 +145,12 @@ public class BoardDataBase {
 		Map<String, String> returnResult = null;
 
 		File file = new File(path,dbFile);
+		FileReader fileReader = null;
+		BufferedReader br = null;
 		try {
 			//1. 파일 읽기
-			FileReader fileReader = new FileReader(file);
-			BufferedReader br = new BufferedReader(fileReader);
+			fileReader = new FileReader(file);
+			br = new BufferedReader(fileReader);
 			String readLine = null;
 			//2. 줄단위로 읽기
 			while((readLine=br.readLine()) != null){
@@ -142,13 +166,19 @@ public class BoardDataBase {
 					break;
 				}
 			}
-			//4. 닫기
-			br.close();
-			fileReader.close();
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			//4. 닫기
+			try {
+				if(br != null)br.close();
+				if(fileReader != null)fileReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return returnResult;
@@ -161,14 +191,12 @@ public class BoardDataBase {
 		//1. 파일읽기
 		File dataFile = new File(path,dbFile);
 		FileReader fr = null;
+		BufferedReader br = null;
+
 		try {
 			fr = new FileReader(dataFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		BufferedReader br = new BufferedReader(fr);
-		try {
-			String readLine= null;
+			br = new BufferedReader(fr);
+			String readLine = null;
 			Map<String, String> result=null;
 			//2. 줄단위로 읽기
 			while((readLine=br.readLine())!=null){
@@ -185,8 +213,18 @@ public class BoardDataBase {
 			//5. 닫기
 			br.close();
 			fr.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			//4. 닫기
+			try {
+				if(br != null)br.close();
+				if(fr != null)fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return returnResult;
@@ -201,21 +239,18 @@ public class BoardDataBase {
 		
 		FileWriter fw = null;
 		BufferedWriter bw= null;
+		FileReader fr = null;
+		BufferedReader br  = null;
 		//3. 임시 파일 생성
-		if(!tempFile.exists()){
-			try {
+		try {
+			if(!tempFile.exists()){
 				tempFile.createNewFile();
 				fw = new FileWriter(tempFile);
 				bw = new BufferedWriter(fw);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-		}
-		
-		try {
-			FileReader fileReader = new FileReader(dataFile);
-			BufferedReader br = new BufferedReader(fileReader);
+
+			fr = new FileReader(dataFile);
+			br = new BufferedReader(fr);
 			String readLine = null;
 			//4. 원래 파일 줄단위로 읽기
 			while((readLine=br.readLine()) != null){
@@ -229,20 +264,27 @@ public class BoardDataBase {
 				}
 				
 			}
-			//6. 닫기
-			br.close();
-			fileReader.close();
-			bw.close();
-			fw.close();
+			//7. 기존 파일삭제
+			dataFile.delete();
+			//8. 임시 파일->기존파일 이름으로 변경
+			tempFile.renameTo(dataFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			//6. 닫기
+			try {
+				if(br != null)br.close();
+				if(fr != null)fr.close();
+				if(bw != null)bw.close();
+				if(fw != null)fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		//7. 기존 파일삭제
-		dataFile.delete();
-		//8. 임시 파일->기존파일 이름으로 변경
-		tempFile.renameTo(dataFile);
+
+
 		
 	}
 	//수정 (update)
@@ -259,18 +301,17 @@ public class BoardDataBase {
 		//4. 임시파일 생성
 		FileWriter fw = null;
 		BufferedWriter bw= null;
-		if(!tempFile.exists()){
-			try {
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			if(!tempFile.exists()){
 				tempFile.createNewFile();
 				fw = new FileWriter(tempFile);
 				bw = new BufferedWriter(fw);
-			} catch (IOException e) {
-				e.printStackTrace();
+
 			}
-		}
-		try {
-			FileReader fileReader = new FileReader(dataFile);
-			BufferedReader br = new BufferedReader(fileReader);
+			fr = new FileReader(dataFile);
+			br = new BufferedReader(fr);
 			String readLine = null;
 			//5. 줄단위로 읽기
 			while((readLine=br.readLine()) != null){
@@ -294,19 +335,25 @@ public class BoardDataBase {
 				}
 				
 			}
-			//8. 닫기
-			br.close();
-			fileReader.close();
-			bw.close();
-			fw.close();
+			//9. 기존 파일 삭제
+			dataFile.delete();
+			//10. 임시 파일->기존파일 이름으로 변경
+			tempFile.renameTo(dataFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			//6. 닫기
+			try {
+				if(br != null)br.close();
+				if(fr != null)fr.close();
+				if(bw != null)bw.close();
+				if(fw != null)fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		//9. 기존 파일 삭제
-		dataFile.delete();
-		//10. 임시 파일->기존파일 이름으로 변경
-		tempFile.renameTo(dataFile);
+
 	}
 }

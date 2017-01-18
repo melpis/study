@@ -33,8 +33,6 @@ public class BoardExecuter {
                 String[] aryUserInput = userInput.split("\\|");
                 String request = aryUserInput[0];
 
-
-
                 if (request.equals("LT")) {
                     board.list();
                 } else if (request.equals("VW")) {
