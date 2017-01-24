@@ -10,27 +10,30 @@ public class DataBaseServer{
 	
 	
 	public static void main(String[] args) throws IOException {
-		ServerSocket serverSocket = new ServerSocket(1521);
-		
-		while(true){
-			Socket clientSocket=serverSocket.accept();
-			InputStream  is = clientSocket.getInputStream();
-			OutputStream os = clientSocket.getOutputStream();
-			
-			MessageRequest messageRequest = new MessageRequest(is);
-			
-			ResultResponse resultResponse = new ResultResponse(os);
-			
+		ServerSocket serverSocket = null;
+		Socket clientSocket = null;
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			serverSocket = new ServerSocket(1521);
 			DataBase dataBase = new DataBase();
-			
-			dataBase.service(messageRequest,resultResponse);
-			os.close();
-			is.close();
-			clientSocket.close();
-			
-			
+			while(true){
+                clientSocket = serverSocket.accept();
+                is = clientSocket.getInputStream();
+                os = clientSocket.getOutputStream();
+                MessageRequest messageRequest = new MessageRequest(is);
+                ResultResponse resultResponse = new ResultResponse(os);
+                dataBase.service(messageRequest,resultResponse);
+            }
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(os != null) os.close();
+			if(is != null) is.close();
+			if(clientSocket != null) clientSocket.close();
+			if(serverSocket != null) serverSocket.close();
 		}
-		
-		
+
+
 	}
 }

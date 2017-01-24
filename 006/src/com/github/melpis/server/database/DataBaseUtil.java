@@ -6,7 +6,7 @@ import java.util.Locale;
 
 public class DataBaseUtil {
 	
-	public static  String getSystemDate(){
+	public static String getSystemDate(){
 		Date systemDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"yyyy.MM.dd HH:mm:ss", Locale.KOREA);
