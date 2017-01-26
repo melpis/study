@@ -1,2 +1,21 @@
+# Compiled source #
+*.class
+
+# Build output directies
+/target
+*/target
+/build
+*/build
+/bin
+*/bin
+
+# IntelliJ specific files/directories
+out
 .idea
 *.iml
+
+# Eclipse specific files/directories
+.classpath
+.project
+.settings
+.metadata
