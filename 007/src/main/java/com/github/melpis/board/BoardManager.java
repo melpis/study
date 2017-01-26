@@ -1,23 +1,39 @@
 package com.github.melpis.board;
 
-import java.io.IOException;
+import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BoardManager {
-
-
-    public BoardManager() {
-
+    private final String DRIVER_NAME="org.postgresql.Driver";
+    private final String DB_URI="jdbc:postgresql://127.0.0.1:5432/postgres";
+    private final String DB_USER_NAME="postgres";
+    private final String DB_USER_PASSWORE="postgres";
+    /*
+    CREATE TABLE public.TB_BOARD
+    (
+        seq BIGSERIAL PRIMARY KEY NOT NULL,
+        title VARCHAR(255),
+        content TEXT NOT NULL,
+        regist_date DATE NOT NULL,
+        hit INT NOT NULL
+    );
+    CREATE UNIQUE INDEX "TB_BOARD_seq_uindex" ON public.TB_BOARD (seq);
+     */
+    public BoardManager(){
     }
 
     // 문서 등록 폼
     public void registDoumentForm() {
+
         // 1. 등록 폼출력
         System.out.println("제목: ");
         System.out.println("내용: ");
 
     }
-
     // 문서 등록
     public void registDocument(String[] outputData) {
         // 1.1 제목 추출
@@ -31,31 +47,35 @@ public class BoardManager {
         if (userInputContent.length() < 1 && userInputContent.length() > 2000) {
             return;
         }
-
-        // 3. 등록
-
-        // 3.1 문서 관리 번호 가져오는 명령
-        String statement = "getseq";
-        String resultSeq = null;
         try {
-            // 3.2 접속
-            this.boardDataBase.connetion();
-            // 3.3 실행
-            this.boardDataBase.executeQuery(statement);
-            // 3.4 결과
-            resultSeq = this.boardDataBase.getResult();
-            // 3.5 데이터를 등록하는 명령어
-            statement = "insert SEQ, TITLE, CONTENT, REGIST_DATE, HIT \n" +
-                    "from db \n" +
-                    "values " + resultSeq + "," + userInputTitle + "," + userInputContent + "," + "sysdate" + "," + "0";
-            // 3.6 실행
-            this.boardDataBase.execute(statement);
-
-        } catch (IOException e) {
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
-            // 3.7 닫기
-            this.boardDataBase.close();
+        }
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql = "insert into TB_BOARD(TITLE, CONTENT, REGIST_DATE, HIT)";
+            sql += "values( ?, ?, now(), 0) ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 prepardStatement 값 맵핑
+            preparedStatement.setString(1, userInputTitle);
+            preparedStatement.setString(2, userInputContent);
+            //3.6 실행
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally{
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
         }
 
         // 4. 결과 출력
@@ -64,65 +84,121 @@ public class BoardManager {
     }
 
     // 문서 상세 보기
-    public void viewDocument(String[] outputData) {
+    public void viewDocument(String[] outputData){
         //1. 사용자가 입력한 문서 번호 가져오기
         String userInputSeq = outputData[1];
         //1.1 변환
         int parameterSeq = Integer.parseInt(userInputSeq);
-
-        //2.1 데이터를 가져오는 명령어
-        String statement = "search SEQ, TITLE, CONTENT, REGIST_DATE, HIT \n" +
-                "from db\n" +
-                "where SEQ=" + parameterSeq;
+        //2. 유효성 검사
+        if(parameterSeq <=0){
+            return;
+        }
 
         try {
-            //2.2 접속
-            this.boardDataBase.connetion();
-            //2.3 실행
-            this.boardDataBase.executeQuery(statement);
-        } catch (IOException e) {
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
-            //2.4 닫기
-            this.boardDataBase.close();
         }
+        Map data = null;
 
-        // 3.1 결과값 받고 출력
-        if (this.boardDataBase.hasNext()) {
-            System.out.println("글번호 : " + this.boardDataBase.getResult("SEQ"));
-            System.out.println("제목  : " + this.boardDataBase.getResult("TITLE"));
-            System.out.println("등록일 : " + this.boardDataBase.getResult("REGIST_DATE"));
-            System.out.println("조회수 : " + this.boardDataBase.getResult("HIT"));
-            System.out.println("내용 : " + this.boardDataBase.getResult("CONTENT"));
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql =" select SEQ, TITLE, CONTENT, REGIST_DATE, HIT ";
+            sql+=" from TB_BOARD ";
+            sql+=" where SEQ= ? ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 prepardStatement 값 맵핑
+            preparedStatement.setInt(1, parameterSeq);
+            //3.6 실행
+            resultSet =preparedStatement.executeQuery();
+            //3.7 결과값 매핑
+            if(resultSet.next()){
+                data = new HashMap();
+                data.put("SEQ", String.valueOf(resultSet.getInt("SEQ")));
+                data.put("TITLE",resultSet.getString("TITLE"));
+                data.put("CONTENT",resultSet.getString("CONTENT"));
+                data.put("REGIST_DATE",resultSet.getDate("REGIST_DATE").toString());
+                data.put("HIT",String.valueOf(resultSet.getInt("HIT")));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally{
+            if(resultSet != null){try {resultSet.close();} catch (SQLException e) {} }
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
         }
+        //4. 결과 출력
+        System.out.println("글번호 : " +data.get("SEQ"));
+        System.out.println("제목  : "  +data.get("TITLE"));
+        System.out.println("등록일 : " +data.get("REGIST_DATE"));
+        System.out.println("조회수 : " +data.get("HIT"));
+        System.out.println("내용 : "  +data.get("CONTENT"));
+
     }
 
 
-    public void viewDocumentList() {
-        //1. 데이터를 가져오는 명령어
-        String statement = "search SEQ, TITLE, CONTENT, REGIST_DATE, HIT \n" +
-                "from db";
+    public void viewDocumentList(){
+
         try {
-            //2. 접속
-            this.boardDataBase.connetion();
-            //3. 실행
-            this.boardDataBase.executeQuery(statement);
-        } catch (IOException e) {
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
-            //4. 닫기
-            this.boardDataBase.close();
         }
 
-        //5. 결과 값 출력
-        while (this.boardDataBase.hasNext()) {
-            System.out.println("글번호 : " + this.boardDataBase.getResult("SEQ"));
-            System.out.println("제목  : " + this.boardDataBase.getResult("TITLE"));
-            System.out.println("등록일 : " + this.boardDataBase.getResult("REGIST_DATE"));
-            System.out.println("조회수 : " + this.boardDataBase.getResult("HIT"));
-            System.out.println("내용 : " + this.boardDataBase.getResult("CONTENT"));
+        List<Map<String,String>> dataList = new ArrayList<>();
 
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql =" select SEQ, TITLE, CONTENT, REGIST_DATE, HIT ";
+            sql+=" from TB_BOARD ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 실행
+            resultSet =preparedStatement.executeQuery();
+            //3.6 결과값 매핑
+            while(resultSet.next()){
+                Map<String,String> data = new HashMap<>();
+                data.put("SEQ", String.valueOf(resultSet.getInt("SEQ")));
+                data.put("TITLE",resultSet.getString("TITLE"));
+                data.put("CONTENT",resultSet.getString("CONTENT"));
+                data.put("REGIST_DATE",resultSet.getDate("REGIST_DATE").toString());
+                data.put("HIT",String.valueOf(resultSet.getInt("HIT")));
+                dataList.add(data);
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally{
+            if(resultSet != null){try {resultSet.close();} catch (SQLException e) {} }
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
+        }
+        // 4. 결과 출력
+        for(Map<String,String> data:dataList){
+            System.out.println("글번호 : " +data.get("SEQ"));
+            System.out.println("제목  : "  +data.get("TITLE"));
+            System.out.println("등록일 : " +data.get("REGIST_DATE"));
+            System.out.println("조회수 : " +data.get("HIT"));
+            System.out.println("내용 : "  +data.get("CONTENT"));
         }
 
     }
@@ -132,24 +208,44 @@ public class BoardManager {
         String userInputSeq = outputData[1];
         //1.1 변환
         int parameterSeq = Integer.parseInt(userInputSeq);
-
-        //2. 데이터를 삭제하기 위한 명령어
-        String statement = "remove \n" +
-                "from db\n" +
-                "where SEQ=" + parameterSeq;
-        try {
-            //3. 접속
-            this.boardDataBase.connetion();
-            //4. 실행
-            this.boardDataBase.execute(statement);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //5. 닫기
-            this.boardDataBase.close();
+        //2. 유효성 검사
+        if(parameterSeq<=0){
+            return ;
         }
 
+        try {
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql =" delete from TB_BOARD ";
+            sql+=" where SEQ= ? ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 prepardStatement 값 맵핑
+            preparedStatement.setInt(1, parameterSeq);
+            //3.6 실행
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally{
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
+        }
+
+        //4. 결과 출력
         System.out.println("삭제 되었습니다");
 
     }
@@ -159,32 +255,60 @@ public class BoardManager {
         String userInputSeq = outputData[1];
         //1.1 변환
         int parameterSeq = Integer.parseInt(userInputSeq);
-
-        //2.1 데이터를 가져오는 명령어
-        String statement = "search SEQ, TITLE, CONTENT, REGIST_DATE, HIT \n" +
-                "from db\n" +
-                "where SEQ=" + parameterSeq;
+        //2. 유효성 검사
+        if(parameterSeq<=0){
+            return;
+        }
 
         try {
-            //2.2 접속
-            this.boardDataBase.connetion();
-            //2.3 실행
-            this.boardDataBase.executeQuery(statement);
-        } catch (IOException e) {
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
-            //2.4 닫기
-            this.boardDataBase.close();
         }
+        Map data = null;
 
-        // 3.1 결과값 받고 출력
-        if (this.boardDataBase.hasNext()) {
-            System.out.println("글번호 : " + this.boardDataBase.getResult("SEQ"));
-            System.out.println("제목  : " + this.boardDataBase.getResult("TITLE"));
-            System.out.println("등록일 : " + this.boardDataBase.getResult("REGIST_DATE"));
-            System.out.println("조회수 : " + this.boardDataBase.getResult("HIT"));
-            System.out.println("내용 : " + this.boardDataBase.getResult("CONTENT"));
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql =" select SEQ, TITLE, CONTENT, REGIST_DATE, HIT ";
+            sql+=" from TB_BOARD ";
+            sql+=" where SEQ= ? ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 prepardStatement 값 맵핑
+            preparedStatement.setInt(1, parameterSeq);
+            //3.6 실행
+            ResultSet resultSet =preparedStatement.executeQuery();
+            //3.7 결과값 매핑
+            if(resultSet.next()){
+                data = new HashMap();
+                data.put("SEQ", String.valueOf(resultSet.getInt("SEQ")));
+                data.put("TITLE",resultSet.getString("TITLE"));
+                data.put("CONTENT",resultSet.getString("CONTENT"));
+                data.put("REGIST_DATE",resultSet.getDate("REGIST_DATE").toString());
+                data.put("HIT",String.valueOf(resultSet.getInt("HIT")));
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }finally{
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
         }
+        //4. 결과 출력
+        System.out.println("글번호 : " +data.get("SEQ"));
+        System.out.println("제목  : "  +data.get("TITLE"));
+        System.out.println("등록일 : " +data.get("REGIST_DATE"));
+        System.out.println("조회수 : " +data.get("HIT"));
+        System.out.println("내용 : "  +data.get("CONTENT"));
+
     }
 
     public void editDocument(String[] outputData) {
@@ -196,25 +320,53 @@ public class BoardManager {
         String userInputContent = outputData[3];
         //1.4 변환
         int parameterSeq = Integer.parseInt(userInputSeq);
-
-        //2. 데이터를 수정하기 위한 명령어
-        String statement = "modify TITLE=" + userInputTitle + "," + "CONTENT="
-                + userInputContent + "," + "REGIST_DATE=sysdate \n" +
-                "from db \n" +
-                "where SEQ=" + parameterSeq;
+        //2. 유효성검사
+        if(parameterSeq<=0){
+            return ;
+        }
+        if (userInputTitle.length() < 1 && userInputTitle.length() > 600) {
+            return;
+        }
+        if (userInputContent.length() < 1 && userInputContent.length() > 2000) {
+            return;
+        }
         try {
-            //3. 접속
-            this.boardDataBase.connetion();
-            //4. 실행
-            this.boardDataBase.execute(statement);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //5. 닫기
-            this.boardDataBase.close();
+            //3.1 드라이버 로딩
+            Class.forName(DRIVER_NAME);
+        } catch (ClassNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
 
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            //3.2 연결하기
+            connection = DriverManager.getConnection(DB_URI,DB_USER_NAME,DB_USER_PASSWORE);
+            //3.3 sql문 준비하기
+            String sql =" update TB_BOARD set ";
+            sql+=" TITLE = ? , ";
+            sql+=" CONTENT = ? , ";
+            sql+=" REGIST_DATE = now() ";
+            sql+=" where SEQ= ? ";
+            //3.4 prepardStatement에 sql넣기
+            preparedStatement = connection.prepareStatement(sql);
+            //3.5 prepardStatement 값 맵핑
+            preparedStatement.setString(1, userInputTitle);
+            preparedStatement.setString(2, userInputContent);
+            preparedStatement.setInt(3,parameterSeq);
+            //3.6 실행
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally{
+            if(preparedStatement != null){ try {preparedStatement.close();} catch (SQLException e) {} }
+            if(connection != null){ try { connection.close();} catch (SQLException e) {}	}
+        }
+
+        //4. 결과 출력
         System.out.println("수정완료 하였습니다");
 
     }
