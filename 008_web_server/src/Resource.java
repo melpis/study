@@ -13,14 +13,11 @@ public class Resource {
 		String requestURI = request.getRequestURI();
 		//2. 유효성 검사
 		File file = new File(WebServer.SERVER_ROOT, requestURI);
-		if (!file.exists()) {
-			// 예외 처리
-		}
-		if (!file.canRead()) {
+		if (!file.exists() || !file.canRead()) {
 			// 예외 처리
 		}
 		//3. 처리
-		FileInputStream fis=null;
+		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
 			int readCount = 0;
@@ -30,26 +27,16 @@ public class Resource {
 				response.write(buffer);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
-			
 			try {
 				if(fis!=null)fis.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//do nothing
 			}
 		}
-		
-
-		//System.out.println(returnBuffer);
-		//4. 결과 출력
-		
-		//response.write(returnBuffer);
 	}
 }
 

@@ -35,8 +35,6 @@ public class WebServer {
 				e2.printStackTrace();
 			}
 			
-			
-			
 			//3. 접속 수락 후 처리
 			//3.1. 자원 선언
 			Request request = null;
@@ -71,7 +69,6 @@ public class WebServer {
 		try {
 			if(serverSocket!=null){	serverSocket.close();}
 			} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
