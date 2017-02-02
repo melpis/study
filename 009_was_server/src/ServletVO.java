@@ -1,4 +1,5 @@
-
+import java.io.File;
+import java.util.Map;
 
 public class ServletVO {
 
@@ -16,6 +17,6 @@ public class ServletVO {
 	public void setServletClass(String servletClass) {
 		this.servletClass = servletClass;
 	}
-	
-	
+
+
 }

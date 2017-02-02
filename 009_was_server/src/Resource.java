@@ -32,25 +32,19 @@ public class Resource {
 				response.write(buffer);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			
 		} finally {
-			//System.out.println(returnBuffer);
 			try {
 				if (fis != null) {
 					fis.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		//4. 결과 출력
-		
-		//response.write(returnBuffer);
 	}
 }
 
