@@ -22,11 +22,9 @@ public class WASServer extends Thread {
             return;
         }
 
-
-        CreateSAXParser parser = new CreateSAXParser("resource/web.xml");
+        CreateSAXParser parser = new CreateSAXParser("009_was_server/src/main/resource/web.xml");
 
         pages = parser.getServletMap();
-
 
         while (true) {
             //2. 대기

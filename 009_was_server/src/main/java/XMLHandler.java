@@ -27,11 +27,11 @@ public class XMLHandler extends DefaultHandler {
         this.currentElement = qName;
         if ("webapp".equals(qName)) {
 
-            servletMap = new HashMap<String, String>();
+            servletMap = new HashMap<>();
 
         }
         if ("servlet".equals(qName)) {
-            servletList = new ArrayList<String>();
+            servletList = new ArrayList<>();
         }
     }
 
