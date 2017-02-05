@@ -15,14 +15,14 @@ import com.github.melpis.board.manager.BoardManager;
  */
 public class BoardRemoveServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public BoardRemoveServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public BoardRemoveServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
@@ -31,21 +31,21 @@ public class BoardRemoveServlet extends HttpServlet {
 		//1. 데이터 추출
 		String sSeq = request.getParameter("seq");
 		int seq = 0;
-		try{
+		try {
 			seq = Integer.parseInt(sSeq);
-		}catch (NumberFormatException e) {
-		
+		} catch (NumberFormatException e) {
+
 		}
 		//2. 유효성 검사
-		if(seq < 1){
-			
+		if (seq < 1) {
+
 		}
 		//3. 처리
 		BoardManager boardManager = new BoardManager();
 		boardManager.removeBoard(seq);
 		//4. 결과 출력
 		PrintWriter out = response.getWriter();
-		
+
 		out.println("<HTML>");
 		out.println("<HEAD>");
 		out.println("</HEAD>");

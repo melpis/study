@@ -2,11 +2,9 @@ package com.github.melpis.board.vo;
 
 import java.util.Date;
 
-import com.github.melpis.board.commons.paging.vo.Paging;
 
 
-
-public class BoardVO  extends Paging{
+public class BoardVO {
 	//데이터 정의
 	/**
 	 * 게시물 번호
@@ -25,17 +23,20 @@ public class BoardVO  extends Paging{
 	 */
 	private Date registDate;
 	/**
-	 * 
+	 *
 	 */
 	private int readCount;
+
 	//생성자
-	public BoardVO(){}
+	public BoardVO() {
+	}
 	//처리
-	
+
 	//getter setter
 	public int getSeq() {
 		return seq;
 	}
+
 	/**
 	 * seq 데이터 주입
 	 * @param seq
@@ -43,30 +44,38 @@ public class BoardVO  extends Paging{
 	public void setSeq(int seq) {
 		this.seq = seq;
 	}
+
 	public String getTitle() {
 		return title;
 	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 	public String getContent() {
 		return content;
 	}
+
 	public void setContent(String content) {
 		this.content = content;
 	}
+
 	public Date getRegistDate() {
 		return registDate;
 	}
+
 	public void setRegistDate(Date registDate) {
 		this.registDate = registDate;
 	}
+
 	public int getReadCount() {
 		return readCount;
 	}
+
 	public void setReadCount(int readCount) {
 		this.readCount = readCount;
 	}
-	
-	
+
+
 }

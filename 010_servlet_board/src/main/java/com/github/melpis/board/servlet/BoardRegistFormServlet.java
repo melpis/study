@@ -13,20 +13,20 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class BoardRegistFormServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public BoardRegistFormServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public BoardRegistFormServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out=response.getWriter();
+		PrintWriter out = response.getWriter();
 		out.println("<HTML>");
 		out.println("<HEAD>");
 		out.println("</HEAD>");
@@ -36,12 +36,12 @@ public class BoardRegistFormServlet extends HttpServlet {
 		out.println("<tr>");
 		out.println("<td>");
 		out.println("제목");
-		out.println("</td>");		
+		out.println("</td>");
 		out.println("<td>");
 		out.println("<input type='text' id='title' name='title' value='' size='' maxlength=''/>");
 		out.println("</td>");
 		out.println("</tr>");
-		
+
 		out.println("<tr>");
 		out.println("<td>");
 		out.println("내용");
@@ -54,11 +54,11 @@ public class BoardRegistFormServlet extends HttpServlet {
 		out.println("<td colspan='2'>");
 		out.println("<input type='submit' value='전송'/>");
 		out.println("</td>");
-		
+
 		out.println("</tr>");
 		out.println("</table>");
 		out.println("</FORM>");
-		
+
 
 		out.println("</BODY>");
 		out.println("</HTML>");
