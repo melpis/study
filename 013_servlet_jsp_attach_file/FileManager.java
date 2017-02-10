@@ -293,7 +293,7 @@ public class FileManager {
 			sql += " TB_FILE ";
 			sql += " (SEQ, FILE_NAME, FILE_SIZE, CONTENT_TYPE, TEMP_NAME, REGIST_DATE, DOWNLOAD_COUNT)";
 			sql += " values ";
-			sql += " (?, ?, ?, ?, ?, sysdate, 0) ";
+			sql += " (?, ?, ?, ?, ?, now(), 0) ";
 			 
 			pstmt=conn.prepareStatement(sql);
 			pstmt.setInt(1, attachfileVO.getSeq());
