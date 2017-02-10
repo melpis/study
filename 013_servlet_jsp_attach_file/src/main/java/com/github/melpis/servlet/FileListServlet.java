@@ -16,10 +16,11 @@ import com.github.melpis.fileupload.vo.AttachfileVO;
  * Servlet implementation class FileListServlet
  */
 public class FileListServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private String resultViewName = null;
     private String error = null;
     private FileManager fileManager = null;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -28,29 +29,29 @@ public class FileListServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		this.resultViewName = config.getInitParameter("resultViewName");
-		this.error  = config.getServletContext().getInitParameter("error");
-		this.fileManager = new FileManager();
-		
-	}
+    /**
+     * @see Servlet#init(ServletConfig)
+     */
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        this.resultViewName = config.getInitParameter("resultViewName");
+        this.error = config.getServletContext().getInitParameter("error");
+        this.fileManager = new FileManager();
 
-	/**
-	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<AttachfileVO> paramList = null;
-		
-		paramList=this.fileManager.fileList();
-		
-		request.setAttribute("paramList", paramList);
-		request.getRequestDispatcher(this.resultViewName).forward(request, response);
-		
-		
-	}
+    }
+
+    /**
+     * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<AttachfileVO> paramList = null;
+
+        paramList = this.fileManager.fileList();
+
+        request.setAttribute("paramList", paramList);
+        request.getRequestDispatcher(this.resultViewName).forward(request, response);
+
+
+    }
 
 }

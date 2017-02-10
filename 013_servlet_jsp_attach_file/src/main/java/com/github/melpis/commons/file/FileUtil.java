@@ -30,8 +30,6 @@ public class FileUtil {
             e1.printStackTrace();
         }
 
-        System.err.println("1" + parentPath);
-        System.err.println(attachfile.getTempName());
         File file = new File(parentPath, attachfile.getTempName());
         FileInputStream fis = null;
         try {
@@ -55,7 +53,6 @@ public class FileUtil {
             }
             bos.flush();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             try {
@@ -63,7 +60,6 @@ public class FileUtil {
                     bos.close();
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             try {
@@ -71,7 +67,6 @@ public class FileUtil {
                     bis.close();
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             try {
@@ -79,7 +74,6 @@ public class FileUtil {
                     fis.close();
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

@@ -18,7 +18,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class MultipartRequest {
 
     private int threshold = 1024 * 100;
-    private String tmepPath = "C:/temp/";
+    private String tmepPath = "/temp/";
     private int sizeMax = 1024 * 1024 * 100;
 
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -51,8 +51,6 @@ public class MultipartRequest {
                 FileItem fileItem = fileItemList.get(indexI);
 
                 if (fileItem.isFormField()) {
-                    //�Ϲ�
-
                     String key = fileItem.getFieldName();
                     String value = fileItem.getString();
 
@@ -60,7 +58,6 @@ public class MultipartRequest {
 
 
                 } else {
-                    //����
                     String key = fileItem.getFieldName();
                     String fileName = fileItem.getName();
                     long fileSize = fileItem.getSize();
