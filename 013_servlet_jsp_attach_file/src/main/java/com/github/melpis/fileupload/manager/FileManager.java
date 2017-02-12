@@ -14,10 +14,10 @@ import java.util.List;
 
 
 public class FileManager {
-    private final String DB_DRIVER = "oracle.jdbc.driver.OracleDriver";
+    private final String DB_DRIVER = "org.postgresql.Driver";
     private final String DB_URI = "jdbc:oracle:thin:@192.168.0.31:1521:inter";
-    private final String DB_USER_ID = "user00";
-    private final String DB_USER_PW = "user00";
+    private final String DB_USER_ID = "postgres";
+    private final String DB_USER_PW = "postgres";
 
     public FileManager() {
 

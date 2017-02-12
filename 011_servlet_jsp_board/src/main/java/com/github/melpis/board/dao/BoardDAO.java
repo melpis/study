@@ -69,7 +69,7 @@ public class BoardDAO {
             //3.3
             String sql = "";
             sql += " select ";
-            sql += "	ROWNUM RN, SEQ, TITLE, CONTENT, REGIST_DATE, READ_COUNT ";
+            sql += "   SEQ, TITLE, CONTENT, REGIST_DATE, READ_COUNT ";
             sql += " from ";
             sql += "		TB_BOARD ";
             sql += "	offset ? limit ? ";
