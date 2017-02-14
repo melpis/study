@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>게시물 목록</title>
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript" src="../js/ajax.js" ></script>
+<script type="text/javascript">
+
+
+
+//var ajax = new XMLHttpRequest();
+
+function loadCommentList(){
+	//1. 데이터 추출
+	//2. 유효성 검사
+	//3. 처리
+	//4. 결과 출력
+	var ajax= new Ajax('/comment/list.do','', listSuccess, listFail,'POST');
+	//ajax.open("GET", "list.do", true);
+	//ajax.onreadystatechange=callback;
+	//ajax.send(null);
+	
+}
+
+
+
+
+function listSuccess(xml){
+	var commentList = xml.getElementsByTagName("comment");
+	var objList= document.getElementById("commentList");
+
+
+	for(var indexI =0 ; indexI < commentList.length; indexI++){
+		var comment = commentList[indexI];
+		var seq = comment.getElementsByTagName("seq")[0].firstChild.nodeValue;			
+		var content =comment.getElementsByTagName("content")[0].firstChild.nodeValue;
+		var registDate =comment.getElementsByTagName("registDate")[0].firstChild.nodeValue;
+		
+		var html="";
+		html+="<tr>";
+		html+="		<td>";
+		html+= seq
+		html+="		</td>";
+
+		html+="		<td>";
+		html+= content
+		html+="		</td>";
+
+		html+="		<td>";
+		html+= registDate;
+		html+="		</td>";
+		html+="		<td>";
+		html+= "<input type='button' value='삭제' onclick=";
+		html+= "deleteComment("+seq+"); ";		
+		html+=	"/>";
+		html+="		</td>";
+		
+
+
+		
+		html+="</tr>";
+
+
+		
+
+		objList.innerHTML +=html;
+		
+	}
+}
+function listFail(ajax){
+
+	alert(ajax.status +":"+ajax.statusText)
+}
+
+function deleteComment(seq)
+{
+
+	ajax.open("GET", "delete.do?seq="+seq, true);
+	var objList= document.getElementById("commentList").innerHTML='';
+	ajax.send(null);
+	loadCommentList();
+	
+}
+
+function registCommnet()
+{
+	var content = document.getElementById("content").value;
+	ajax.open("GET", "regist.do?content="+content, true);
+	var objList= document.getElementById("commentList").innerHTML='';
+	ajax.send(null);
+	document.getElementById("content").value="";
+	loadCommentList();
+
+	
+}
+
+</script>
+
+
+
+</head>
+<body style="margin-top: 0px; margin-left: 0px;" onload="loadCommentList();" >
+<table width="970" border="0" align="center" cellpadding="0" cellspacing="0" >
+	<tr>
+		<td colspan="2">
+			<!-- TOP 시작 -->
+			<!-- TOP 끝 -->
+		</td>
+	</tr>
+	<tr>
+		<td width="250" valign="top" bgcolor="#f7f7f7" style="padding-top: 10px;">
+			<!-- LEFT 시작 -->
+			<!-- LEFT 끝 -->
+		</td>
+		<td width="740" align="center">
+			<!-- 본문 시작 -->
+			<table width="710" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td height="10"></td>
+				</tr>
+				<tr>
+					<td>
+						<img src="/images/contents_title_01.gif" width="711" height="86" />
+					</td>
+				</tr>
+				<tr>
+					<td height="30">&nbsp;</td>
+				</tr>
+				<tr>
+					<td align="center" valign="top">
+						<table width="690" border="0" align="center" cellpadding="0" cellspacing="0">
+							<tr>
+								<td colspan="4">
+									<table width="690" border="0" cellpadding="0" cellspacing="0" background="/images/board_title_bg.gif">
+										<tr height="20">
+											<td width="30" align="center">번호</td>
+											<td width="250" align="center">내용</td>
+											<td width="50" align="center">등록일</td>
+											<td width="60" align="center">삭제</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tbody id="commentList" align="center">
+								<tr>
+								<td width="60" align="center">1</td>
+								<td height="30" align="center">코멘트 내용</td>
+								<td width="100" align="center">2009-11-23</td>
+								<td width="60" align="center"><input type="button" value="삭제" onclick="location.href='delete.do?seq?'"/></td>
+								</tr>
+							</tbody>
+						
+							<tr>
+								<td colspan="4" height="1" bgcolor="#d6d7d6"></td>
+							</tr>
+							
+							
+							
+				
+							<tr>
+								<td height="70" colspan="4">
+									<table width="690" border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td align="left">
+											<textarea rows="3" cols="72" id="content" name="content"></textarea>
+											</td>
+											<td align="right" valign="bottom">
+					
+												<img src="/images/button_write.gif" width="81" height="31" border="0" onclick="registCommnet();" style="cursor: pointer;"/>
+												
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td height="70">&nbsp;</td>
+				</tr>
+			</table>
+			<!-- 본문 끝 -->
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" bgcolor="#b5d7ef">
+			<!-- BOTTOM 시작 -->
+			
+			<!-- BOTTOM 끝 -->
+		</td>
+	</tr>
+</table>
+</body>
+</html>

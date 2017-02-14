@@ -6,8 +6,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>게시물 목록</title>
 <link rel="stylesheet" type="text/css" href="/css/style.css" />
-<script type='text/javascript' src='/dwr/interface/CommentManager.js'></script>
-<script type='text/javascript' src='/dwr/engine.js'></script>
 <script type="text/javascript">
 
 

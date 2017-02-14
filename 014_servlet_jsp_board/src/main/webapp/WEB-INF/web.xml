@@ -201,17 +201,37 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>commentServlet</display-name>
-    <servlet-name>commentServlet</servlet-name>
-    <servlet-class>com.github.melpis.comment.servlet.CommentServlet</servlet-class>
+    <display-name>commentListServlet</display-name>
+    <servlet-name>commentListServlet</servlet-name>
+    <servlet-class>com.github.melpis.comment.servlet.CommentListServlet</servlet-class>
     <init-param>
       <description></description>
-      <param-name>resultViewName</param-name>
-      <param-value>/WEB-INF/jsp/comment/comment.jsp</param-value>
+      <param-name>viewName</param-name>
+      <param-value>/comment/list.jsp</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
-    <servlet-name>commentServlet</servlet-name>
-    <url-pattern>/comment/comment.do</url-pattern>
+    <servlet-name>commentListServlet</servlet-name>
+    <url-pattern>/comment/list.do</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>commentRegistServlet</display-name>
+    <servlet-name>commentRegistServlet</servlet-name>
+    <servlet-class>com.github.melpis.comment.servlet.CommentRegistServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>commentRegistServlet</servlet-name>
+    <url-pattern>/comment/regist.do</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>commentDeleteServlet</display-name>
+    <servlet-name>commentDeleteServlet</servlet-name>
+    <servlet-class>com.github.melpis.comment.servlet.CommentDeleteServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>commentDeleteServlet</servlet-name>
+    <url-pattern>/comment/delete.do</url-pattern>
   </servlet-mapping>
   </web-app>
